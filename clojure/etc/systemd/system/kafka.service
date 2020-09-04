@@ -1,0 +1,14 @@
+[Unit]
+Description=kafka
+After=network.target
+
+[Service]
+ExecStart=/home/pi/kafka/bin/kafka-server-start.sh kafka/config/server.properties
+WorkingDirectory=/home/pi
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
