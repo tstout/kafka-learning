@@ -10,12 +10,12 @@
 
 ;; see https://stackoverflow.com/a/32392174/59768
 ;; for a discussion of offsets
-(defn kafka-consumer-config
-  [group-id]
-  {"bootstrap.servers" bootstrap-servers
-   "group.id" group-id
-   "auto.offset.reset" "earliest"
-   "enable.auto.commit" "true"})
+;; (defn kafka-consumer-config
+;;   [group-id]
+;;   {"bootstrap.servers" bootstrap-servers
+;;    "group.id" group-id
+;;    "auto.offset.reset" "earliest"
+;;    "enable.auto.commit" "true"})
 
 (def consumer-config
   {"bootstrap.servers" "stout-pi3:9092"
@@ -37,8 +37,5 @@
   @(ja/list-topics* client)
   (ja/get-broker-config client 0)
   
-
-(ja/)
-
   ;;
   )

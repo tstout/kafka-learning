@@ -7,9 +7,12 @@
 (def topic-foo
   {:topic-name "foo"})
 
-(defn pull-evt [topic]
-  (jc/consumer)
-  )
+(defn sub [topic]
+  {:pre [(string? topic)]}
+  (->
+   consumer-config
+   jc/consumer
+   (jc/subscribe [{:topic-name topic}])))
 
 
 (defn subscribe []
@@ -24,8 +27,21 @@
 
 
 (comment
-  (subscribe)
-  (jc/consumer )
-  (+ 2 3)
+  (def consumer (sub "foo"))
+
+  (.subscription consumer)
+
+  (bean (.metrics consumer))
+
+  (jc/poll consumer 1000)
+  
+  ;; show offset
+  (jc/position-all consumer)
+
+  (count (jc/poll consumer 1000))
+
+  (bean "hello")
+  
+  consumer
   ;;
   )
