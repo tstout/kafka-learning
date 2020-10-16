@@ -16,7 +16,7 @@
 
 
 (comment
-  (publish-n 800)
+  (publish-n 100)
 
   (publish-str "9" "Some string value 124")
 
