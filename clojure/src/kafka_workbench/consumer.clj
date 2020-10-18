@@ -21,14 +21,26 @@
     (doseq [{:keys [key value partition timestamp offset]} (jl/log my-consumer 100)]
       (println "key: " key)
       (println "value: " value)
-      (println "partition: " partition)
+      (println "partition: " partition) 
       (println "timestamp: " timestamp)
       (println "offset: " offset))))
+
+;;(defn consumer)
+
+
+(defn subscriber [topic & opts]
+  ;; TODO - implement thread closure
+  ;; (let [thr (Thread.)
+  ;;       ])
+  (prn topic)
+  (prn opts))
+
 
 
 (comment
   (def consumer (sub "foo"))
 
+  
   (.subscription consumer)
 
   (bean (.metrics consumer))
@@ -40,7 +52,7 @@
 
   (count (jc/poll consumer 1000))
 
-  (bean "hello")
+  (class consumer)
   
   consumer
   ;;
