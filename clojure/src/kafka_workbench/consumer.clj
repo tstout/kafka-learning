@@ -28,10 +28,7 @@
 ;;(defn consumer)
 
 
-(defn subscriber [topic & opts]
-  ;; TODO - implement thread closure
-  ;; (let [thr (Thread.)
-  ;;       ])
+(defn subscriber [topic & opts] 
   (prn topic)
   (prn opts))
 
@@ -40,6 +37,11 @@
 (comment
   (def consumer (sub "foo"))
 
+  (subscriber :a [1 9] [2 3 5])
+  
+  (bean {})
+  
+  
   
   (.subscription consumer)
 

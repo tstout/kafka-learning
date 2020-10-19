@@ -1,7 +1,9 @@
 (ns kafka-workbench.core
   (:require [clojure.tools.cli :refer [parse-opts]]
             [kafka-workbench.producer :refer [publish-n]]
-            [kafka-workbench.consumer :refer [sub]])
+            [kafka-workbench.consumer :refer [sub]]
+            [kafka-workbench.logging :refer [config-logging!]]
+            [taoensso.timbre :as log])
   (:gen-class))
 
 (def cli-options
@@ -17,10 +19,13 @@
 (defn run-cmd [options]
   (let [{:keys [produce consume topic]} options]
     (cond
-      produce (publish-n produce)
+      produce (do
+                (log/infof "publishing %d messages to %s" produce topic)
+                (publish-n produce))
       consume (println "consume"))))
 
 (defn -main [& args]
+  (config-logging! :dev)
   (let [{:keys [options 
                 arguments 
                 summary 
@@ -36,6 +41,8 @@
   (-main "-p" "1")
   
   (-main "-c")
+  
+  (-main "-h")
    
   ;;
   )
