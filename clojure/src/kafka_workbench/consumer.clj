@@ -1,7 +1,9 @@
 (ns kafka-workbench.consumer
   (:require [kafka-workbench.conf :refer [consumer-config]]
             [jackdaw.client :as jc]
-            [jackdaw.client.log :as jl]))
+            [jackdaw.client.log :as jl]
+            [taoensso.timbre :as log])
+  (:import [org.apache.kafka.common.errors WakeupException]))
 
 
 (def topic-foo
@@ -14,48 +16,43 @@
    jc/consumer
    (jc/subscribe [{:topic-name topic}])))
 
-
-(defn subscribe []
-  (with-open [my-consumer (-> (jc/consumer consumer-config)
-                              (jc/subscribe [topic-foo]))]
-    (doseq [{:keys [key value partition timestamp offset]} (jl/log my-consumer 100)]
-      (println "key: " key)
-      (println "value: " value)
-      (println "partition: " partition) 
-      (println "timestamp: " timestamp)
-      (println "offset: " offset))))
-
-;;(defn consumer)
+(defn sub-poll [consumer]
+  (fn []
+    (log/info "Started Consumer Thread")
+    (try
+      (while true
+        (doseq [msg (jc/poll consumer 100)]
+          (log/infof "RX Msg: %s" msg)))
+      (catch WakeupException _ (log/info "Consumer received WakeupException")))))
 
 
-(defn subscriber [topic & opts] 
-  (prn topic)
-  (prn opts))
-
-
+(defn subscriber [topic & opts]
+  (let [consumer (sub topic)
+        thr (Thread. (sub-poll consumer))
+        sub-ops {:start (fn [] (.start thr))
+                 :stop  (fn [] (.wakeup consumer))}]
+    (fn [operation & args] (-> (sub-ops operation) (apply args)))))
 
 (comment
-  (def consumer (sub "foo"))
 
-  (subscriber :a [1 9] [2 3 5])
-  
-  (bean {})
-  
-  
-  
+  (def consumer (subscriber "foo"))
+
+  (consumer :start)
+
+
+
+
   (.subscription consumer)
 
   (bean (.metrics consumer))
 
   (jc/poll consumer 1000)
-  
+
   ;; show offset
   (jc/position-all consumer)
 
-  (count (jc/poll consumer 1000))
-
   (class consumer)
-  
+
   consumer
   ;;
   )

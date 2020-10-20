@@ -1,7 +1,7 @@
 (ns kafka-workbench.core
   (:require [clojure.tools.cli :refer [parse-opts]]
             [kafka-workbench.producer :refer [publish-n]]
-            [kafka-workbench.consumer :refer [sub]]
+            [kafka-workbench.consumer :refer [subscriber]]
             [kafka-workbench.logging :refer [config-logging!]]
             [taoensso.timbre :as log])
   (:gen-class))
@@ -22,7 +22,9 @@
       produce (do
                 (log/infof "publishing %d messages to %s" produce topic)
                 (publish-n produce))
-      consume (println "consume"))))
+      consume (do
+                (log/infof "consuming from topic %s" topic)
+                ((subscriber topic) :start)))))
 
 (defn -main [& args]
   (config-logging! :dev)
