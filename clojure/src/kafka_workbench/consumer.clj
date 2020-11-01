@@ -9,10 +9,10 @@
 (def topic-foo
   {:topic-name "foo"})
 
-(defn sub [topic]
+(defn sub [topic group]
   {:pre [(string? topic)]}
   (->
-   consumer-config
+   (consumer-config {"group.id" group})
    jc/consumer
    (jc/subscribe [{:topic-name topic}])))
 
@@ -26,20 +26,24 @@
       (catch WakeupException _ (log/info "Consumer received WakeupException")))))
 
 
-(defn subscriber [topic & opts]
-  (let [consumer (sub topic)
+(defn subscriber
+  "Create a consumer which polls a topic for messages."
+  [topic group]
+  (let [consumer (sub topic group)
         thr (Thread. (sub-poll consumer))
         sub-ops {:start (fn [] (.start thr))
-                 :stop  (fn [] (.wakeup consumer))}]
+                 :stop  (fn [] (.wakeup consumer))
+                 :consumer (fn [] consumer)}]
     (fn [operation & args] (-> (sub-ops operation) (apply args)))))
 
 (comment
 
-  (def consumer (subscriber "foo"))
+  (def consumer (sub "foo"))
 
   (consumer :start)
+  (consumer :stop)
 
-
+  (bean (consumer :consumer))
 
 
   (.subscription consumer)
@@ -49,7 +53,7 @@
   (jc/poll consumer 1000)
 
   ;; show offset
-  (jc/position-all consumer)
+  (-> :consumer consumer jc/position-all)
 
   (class consumer)
 

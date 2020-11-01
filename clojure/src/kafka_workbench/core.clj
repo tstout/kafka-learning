@@ -13,26 +13,31 @@
    ["-t" "--topic topic-name" "Specify topic name"
     :default "foo"
     :validate [string? "Topic name must be a string"]]
+   ["-g" "--group group-name" "Specify consumer group id"
+    :default "com.github.tstout.my-consumer"
+    :validate [string? "consumer group id must be a string"]]
    ["-c" "--consume" "Consume from a topic"]
    ["-h" "--help"]])
 
 (defn run-cmd [options]
-  (let [{:keys [produce consume topic]} options]
+  (let [{:keys [group produce consume topic]} options]
     (cond
       produce (do
                 (log/infof "publishing %d messages to %s" produce topic)
                 (publish-n produce))
       consume (do
-                (log/infof "consuming from topic %s" topic)
-                ((subscriber topic) :start)))))
+                (log/infof "consuming from topic %s with consumer id %s" topic group)
+                ((subscriber topic group) :start)))))
 
 (defn -main [& args]
   (config-logging! :dev)
-  (let [{:keys [options 
-                arguments 
-                summary 
+  (let [{:keys [options
+                arguments
+                summary
                 errors]} (parse-opts args cli-options)]
-    (cond 
+    (log/infof "Parsed opts: %s" (str options))
+    (log/infof "Opts Values: %s" (str arguments))
+    (cond
       errors (println errors)
       (:help options) (println summary)
       :else (run-cmd options))))
@@ -41,10 +46,12 @@
 
 (comment
   (-main "-p" "1")
-  
+
+  (str {:a 1})
+
   (-main "-c")
-  
+
   (-main "-h")
-   
+
   ;;
   )
