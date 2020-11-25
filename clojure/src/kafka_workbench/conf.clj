@@ -19,11 +19,12 @@
 
 (def default-consumer-config
   {"bootstrap.servers" "stout-pi3:9092"
+   "auto.offset.reset" "earliest"  ;; default is latest
    "group.id"  "com.github.tstout.my-consumer"
    "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
    "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"})
 
-(defn consumer-config 
+(defn consumer-config
   ([opts] (merge default-consumer-config opts))
   ([] (consumer-config {})))
 
@@ -33,22 +34,22 @@
 
 (comment
   (def client (mk-adm-client))
-  
+
   (merge {:a 1} {:a 2})
-  
+
   (consumer-config {"group.id" "foo-1"})
-  
+
   (consumer-config)
-  
-  
+
+
   (ja/describe-cluster client)
   (ja/describe-topics client)
   (ja/describe-topics-configs client ["foo"])
   (ja/list-topics client)
   @(ja/list-topics* client)
   (ja/get-broker-config client 0)
-  
-  
-  
+
+
+
   ;;
   )
