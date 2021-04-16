@@ -18,6 +18,9 @@
 (comment
   (publish-n 100)
 
+  (time (publish-n 1))
+
+  
   (publish-str "9" "Some string value 124")
 
   ;;
