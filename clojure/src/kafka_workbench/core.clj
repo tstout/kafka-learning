@@ -8,8 +8,7 @@
 
 (def cli-options
   [["-p" "--produce num-msg" "Produce N messages"
-    :parse-fn #(Integer/parseInt %)
-    :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]
+    :parse-fn #(Integer/parseInt %)]
    ["-t" "--topic topic-name" "Specify topic name"
     :default "foo"
     :validate [string? "Topic name must be a string"]]
